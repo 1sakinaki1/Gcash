@@ -16,20 +16,20 @@ input, select, button { width: 100%; padding: 12px; margin-top: 5px; border-radi
 button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 .quick-btns { display: flex; gap: 5px; margin-top: 5px; }
 .quick-btns button { background: #e9ecef; color: #444; font-size: 11px; padding: 8px; }
-.dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 15px 0; }
-.stat-box { background: #f8f9fa; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
-.stat-label { font-size: 9px; color: #666; display: block; text-transform: uppercase; margin-bottom: 2px; }
-.stat-value { font-size: 15px; font-weight: bold; }
+.dashboard { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; margin: 15px 0; }
+.stat-box { background: #f8f9fa; padding: 8px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
+.stat-label { font-size: 8px; color: #666; display: block; text-transform: uppercase; }
+.stat-value { font-size: 12px; font-weight: bold; }
 .wallet-val { color: var(--primary); }
 .cash-val { color: var(--success); }
-.tubo-val { color: var(--purple); }
-.month-val { color: #fd7e14; }
 .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 8px; border: 1px solid #eee; }
-table { width: 100%; border-collapse: collapse; min-width: 550px; }
-th, td { border-bottom: 1px solid #eee; padding: 10px 5px; font-size: 12px; text-align: center; }
+table { width: 100%; border-collapse: collapse; min-width: 650px; }
+th, td { border-bottom: 1px solid #eee; padding: 10px 5px; font-size: 11px; text-align: center; }
 th { background: #f1f3f6; }
-.action-btn { padding: 5px 8px; font-size: 10px; width: auto; margin: 1px; border-radius: 4px; }
-.delete { background: var(--danger); }
+.del-btn { background: #ff4d4d; color: white; border-radius: 4px; padding: 4px 8px; font-size: 10px; width: auto; }
+.sync-btns { display: flex; gap: 10px; margin-top: 10px; }
+.sync-btn-cloud { background: #0f9d58; flex: 1; } 
+.sync-btn-csv { background: #6c757d; flex: 1; }
 </style>
 </head>
 <body>
@@ -38,18 +38,29 @@ th { background: #f1f3f6; }
 
 <div id="mainApp" style="display:none;">
     <div class="container">
-        <div class="dashboard" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-            <div class="stat-box"><span class="stat-label">GCash Wallet</span><span class="stat-value wallet-val">₱<span id="walletDisp">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">Money on Hand</span><span class="stat-value cash-val">₱<span id="cashDisp">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">Today Tubo</span><span class="stat-value tubo-val">₱<span id="daily">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">Month Tubo</span><span class="stat-value month-val">₱<span id="monthly">0</span></span></div>
+        <div class="dashboard">
+            <div class="stat-box"><span class="stat-label">GCash</span><span class="stat-value wallet-val">₱<span id="walletDisp">0</span></span></div>
+            <div class="stat-box"><span class="stat-label">On Hand</span><span class="stat-value cash-val">₱<span id="cashDisp">0</span></span></div>
+            <div class="stat-box"><span class="stat-label">Today</span><span class="stat-value" style="color:var(--purple)">₱<span id="daily">0</span></span></div>
+            <div class="stat-box"><span class="stat-label">Month</span><span class="stat-value" style="color:#fd7e14">₱<span id="monthly">0</span></span></div>
         </div>
 
-        <label>Transaction Type</label>
-        <select id="type"><option value="cashin">Cash In (Receive Cash)</option><option value="cashout">Cash Out (Give Cash)</option></select>
+        <label>Type</label>
+        <select id="type">
+            <option value="cashin">Cash In</option>
+            <option value="load">Load</option>
+            <option value="cashout">Cash Out</option>
+            <option value="convert">Convert</option>
+        </select>
 
-        <label>Customer GCash Number</label>
-        <input type="text" id="phoneNumber" placeholder="09xx...">
+        <label>Search Logs</label>
+        <input type="text" id="search" placeholder="Search name or number..." oninput="render()">
+
+        <label>Customer Name</label>
+        <input type="text" id="note" placeholder="Juan Dela Cruz">
+
+        <label>GCash Number</label>
+        <input type="text" id="phoneNumber" placeholder="09xxxxxxxxx">
 
         <label>Amount (₱)</label>
         <div class="quick-btns">
@@ -62,28 +73,31 @@ th { background: #f1f3f6; }
         <label>Fee / Tubo (₱)</label>
         <input type="number" id="charge" placeholder="0.00">
 
-        <button onclick="addTransaction()" style="margin-top: 15px; background: var(--primary);">Add Record</button>
+        <button onclick="addTransaction()" style="margin-top: 15px; background: var(--primary);">Save Transaction</button>
+        
+        <div class="sync-btns">
+            <button onclick="downloadCSV()" class="sync-btn-csv">📥 Download Spreadsheet</button>
+            <button onclick="syncToGoogleSheets()" class="sync-btn-cloud">☁️ Sync to Cloud</button>
+        </div>
 
         <div class="table-container">
             <table>
-                <thead><tr><th>Date</th><th>Type</th><th>No.</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
+                <thead><tr><th>Date</th><th>Type</th><th>Name</th><th>Number</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
                 <tbody id="logTable"></tbody>
             </table>
         </div>
 
         <hr style="margin: 30px 0 10px 0; border:0; border-top:1px solid #eee;">
-        <h3>⚙️ Inventory Setup</h3>
-        <label>Starting GCash Wallet Balance</label>
-        <input type="number" id="startWallet">
-        <label>Starting Cash on Hand</label>
-        <input type="number" id="startCash">
-        <button onclick="saveInventory()" style="background:#6c757d; margin-top:10px;">Update Starting Balances</button>
+        <h3>⚙️ Balance Setup</h3>
+        <label>Starting Wallet</label><input type="number" id="startWallet">
+        <label>Starting Cash</label><input type="number" id="startCash">
+        <button onclick="saveInventory()" style="background:#6c757d; margin-top:10px;">Sync Balances</button>
         <button onclick="logout()" style="background:#000; font-size:10px; margin-top:20px;">Lock App</button>
     </div>
 </div>
 
 <script>
-/* SECURITY PIN */
+/* PIN SECURITY */
 function checkAuth() {
     let pin = localStorage.getItem("pin");
     let sessionAuth = sessionStorage.getItem("isLoggedIn");
@@ -100,11 +114,10 @@ function checkAuth() {
 function showApp() { document.getElementById("mainApp").style.display = "block"; render(); }
 function logout() { sessionStorage.removeItem("isLoggedIn"); window.location.reload(); }
 
-/* APP LOGIC */
+/* LOGBOOK CORE */
 let logs = JSON.parse(localStorage.getItem("gcashLogs")) || [];
 let initWallet = Number(localStorage.getItem("initWallet")) || 0;
 let initCash = Number(localStorage.getItem("initCash")) || 0;
-
 document.getElementById("startWallet").value = initWallet;
 document.getElementById("startCash").value = initCash;
 
@@ -123,8 +136,7 @@ function autoCalculateTubo() {
 function addTransaction() {
     const amt = Number(document.getElementById("amount").value);
     const charge = Number(document.getElementById("charge").value) || 0;
-    if (amt <= 0) return alert("Enter amount");
-
+    if (amt <= 0) return alert("Amount required");
     const now = new Date();
     logs.push({
         id: Date.now(),
@@ -133,6 +145,7 @@ function addTransaction() {
         month: now.getMonth() + "-" + now.getFullYear(),
         type: document.getElementById("type").value,
         phone: document.getElementById("phoneNumber").value || "N/A",
+        note: document.getElementById("note").value || "-",
         amount: amt,
         charge: charge
     });
@@ -141,6 +154,7 @@ function addTransaction() {
 
 function render() {
     const table = document.getElementById("logTable");
+    const query = document.getElementById("search").value.toLowerCase();
     let currentWallet = initWallet;
     let currentCash = initCash;
     let daily = 0; let monthly = 0;
@@ -149,23 +163,45 @@ function render() {
     
     table.innerHTML = "";
     logs.forEach(l => {
-        if (l.type === "cashin") {
+        if (l.type === "cashin" || l.type === "load") {
             currentWallet -= l.amount;
             currentCash += (l.amount + l.charge);
-        } else {
+        } else { 
             currentWallet += (l.amount + l.charge);
             currentCash -= l.amount;
         }
         if (l.day === today) daily += l.charge;
         if (l.month === thisMonth) monthly += l.charge;
-        
-        table.innerHTML = `<tr><td>${l.date}</td><td>${l.type.toUpperCase()}</td><td>${l.phone}</td><td>₱${l.amount}</td><td>₱${l.charge}</td><td><button class="action-btn delete" onclick="deleteRow(${l.id})">Del</button></td></tr>` + table.innerHTML;
+        if (l.note.toLowerCase().includes(query) || l.phone.includes(query)) {
+            table.innerHTML = `<tr><td>${l.date}</td><td>${l.type.toUpperCase()}</td><td>${l.note}</td><td>${l.phone}</td><td>₱${l.amount}</td><td>₱${l.charge}</td><td><button class="del-btn" onclick="deleteRow(${l.id})">X</button></td></tr>` + table.innerHTML;
+        }
     });
 
     document.getElementById("walletDisp").textContent = currentWallet.toLocaleString();
     document.getElementById("cashDisp").textContent = currentCash.toLocaleString();
     document.getElementById("daily").textContent = daily.toLocaleString();
     document.getElementById("monthly").textContent = monthly.toLocaleString();
+}
+
+function downloadCSV() {
+    if (logs.length === 0) return alert("No transactions to download!");
+    let csv = "Date,Type,Name,Number,Amount,Fee\n";
+    logs.forEach(l => {
+        csv += `${l.date},${l.type},${l.note},${l.phone},${l.amount},${l.charge}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'GCash_Logbook_Backup.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function syncToGoogleSheets() {
+    alert("This requires a Google Sheet Link. For now, use the 'Download Spreadsheet' button for your backup!");
 }
 
 function deleteRow(id) { if(confirm("Delete?")) { logs = logs.filter(l => l.id !== id); save(); } }
