@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
 :root { 
-    --primary: #007bff; --success: #28a745; --danger: #dc3545; --bg: #f4f6fa; --card: #ffffff; --text: #333333; --border: #eeeeee; --input-bg: #ffffff;
+    --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #00c4ff; --bg: #f4f6fa; --card: #ffffff; --text: #333333; --border: #eeeeee; --input-bg: #ffffff;
 }
 body.dark { 
     --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --border: #333333; --input-bg: #2d2d2d;
@@ -16,21 +16,32 @@ body { font-family: -apple-system, Arial, sans-serif; background: var(--bg); col
 .container { max-width: 950px; margin: auto; background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
 
 h1 { text-align: center; color: var(--primary); margin-bottom: 20px; font-size: 22px; }
-.theme-toggle { background: none; color: var(--primary); border: 1px solid var(--primary); width: auto; padding: 8px 15px; font-size: 12px; border-radius: 20px; cursor: pointer; display: block; margin: 0 auto 15px auto; }
+.theme-toggle { background: none; color: var(--primary); border: 1px solid var(--primary); width: auto; padding: 8px 15px; font-size: 11px; border-radius: 20px; cursor: pointer; display: block; margin: 0 auto 15px auto; }
 
+/* Dashboard Editable Boxes */
 .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-.stat-box { background: var(--bg); padding: 12px 5px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
-.stat-label { font-size: 9px; opacity: 0.7; text-transform: uppercase; font-weight: bold; }
-.stat-value { font-size: 13px; font-weight: bold; display: block; margin-top: 4px; }
+.stat-box { background: var(--bg); padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+.stat-label { font-size: 9px; opacity: 0.7; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
+.stat-edit { 
+    background: transparent; border: none; color: inherit; font-size: 13px; font-weight: bold; 
+    text-align: center; width: 90%; outline: none; padding: 2px; border-radius: 4px;
+}
+.stat-edit:focus { background: rgba(0,123,255,0.1); border-bottom: 1px solid var(--primary); }
 
 label { font-weight: 600; margin-top: 15px; display: block; font-size: 13px; }
 input, select, button { width: 100%; padding: 12px; margin-top: 6px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
 button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
+/* Navigation Styling */
+.page-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; gap: 10px; }
+.nav-btn { background: var(--bg); color: var(--primary); border: 1px solid var(--primary); padding: 8px; font-size: 11px; width: auto; flex: 1; }
+.current-date-display { font-weight: bold; font-size: 14px; text-align: center; flex: 2; color: var(--primary); }
+.date-picker-input { padding: 5px; font-size: 12px; border-radius: 5px; border: 1px solid var(--border); }
+
 .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
 .quick-btns button { background: var(--border); color: var(--text); font-size: 12px; padding: 10px; }
 
-.table-header-tools { margin-top: 30px; }
+.table-header-tools { margin-top: 20px; }
 .search-input { border: 2px solid var(--primary); margin-bottom: 10px; }
 
 .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 10px; border: 1px solid var(--border); }
@@ -38,11 +49,16 @@ table { width: 100%; border-collapse: collapse; min-width: 750px; }
 th, td { border-bottom: 1px solid var(--border); padding: 12px 8px; font-size: 12px; text-align: center; }
 th { background: var(--bg); color: var(--primary); }
 
+.badge { padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 10px; display: inline-block; }
+.type-cashin { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
+.type-cashout { background: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
+.type-load { background: rgba(0, 196, 255, 0.2); color: #0096cc; border: 1px solid #00c4ff; }
+.type-adj { background: #6c757d; color: white; border: 1px solid #333; }
+
 .del-btn { background: var(--danger); width: auto; padding: 6px 10px; font-size: 10px; }
 .csv-btn { background: #6c757d; margin-bottom: 15px; }
 
-.setup-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed var(--border); }
-.setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.setup-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed var(--border); text-align: center; }
 </style>
 </head>
 <body>
@@ -53,10 +69,22 @@ th { background: var(--bg); color: var(--primary); }
         <h1>📒 GCash Logbook</h1>
 
         <div class="dashboard">
-            <div class="stat-box"><span class="stat-label">GCash</span><span class="stat-value" style="color:var(--primary)">₱<span id="walletDisp">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">On Hand</span><span class="stat-value" style="color:var(--success)">₱<span id="cashDisp">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">Today</span><span class="stat-value" style="color:#6f42c1">₱<span id="dailyDisp">0</span></span></div>
-            <div class="stat-box"><span class="stat-label">Month</span><span class="stat-value" style="color:#fd7e14">₱<span id="monthlyDisp">0</span></span></div>
+            <div class="stat-box">
+                <span class="stat-label">GCash</span>
+                <span style="color:var(--primary)">₱<input type="number" id="walletEdit" class="stat-edit" onchange="manualUpdate('GCash')"></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">On Hand</span>
+                <span style="color:var(--success)">₱<input type="number" id="cashEdit" class="stat-edit" onchange="manualUpdate('On Hand')"></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Today</span>
+                <span style="color:#6f42c1">₱<input type="number" id="dailyEdit" class="stat-edit" onchange="manualUpdate('Today Tubo')"></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Month</span>
+                <span style="color:#fd7e14">₱<input type="number" id="monthlyEdit" class="stat-edit" onchange="manualUpdate('Monthly Tubo')"></span>
+            </div>
         </div>
 
         <label>Transaction Type</label>
@@ -91,32 +119,36 @@ th { background: var(--bg); color: var(--primary); }
         
         <div class="table-header-tools">
             <button onclick="downloadCSV()" class="csv-btn">📥 Download Spreadsheet</button>
-            <input type="text" id="search" class="search-input" placeholder="🔍 Search name, number, or ref#..." oninput="render()">
+            
+            <div class="page-nav">
+                <button class="nav-btn" onclick="changeDay(-1)">← Older Day</button>
+                <div class="current-date-display">
+                    <input type="date" id="dateJump" class="date-picker-input" onchange="jumpToDate()">
+                </div>
+                <button class="nav-btn" onclick="changeDay(1)">Newer Day →</button>
+            </div>
+
+            <input type="text" id="search" class="search-input" placeholder="🔍 Search any date, name, or number..." oninput="render()" style="margin-top: 15px;">
         </div>
 
         <div class="table-container">
             <table>
-                <thead><tr><th>Date</th><th>Type</th><th>Ref #</th><th>Name</th><th>Number</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
+                <thead><tr><th>Time</th><th>Type</th><th>Ref #</th><th>Name/Adj</th><th>Number</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
                 <tbody id="logTable"></tbody>
             </table>
         </div>
 
         <div class="setup-section">
-            <h3>⚙️ Manual Balance Override</h3>
-            <div class="setup-grid">
-                <div><label>Set Wallet</label><input type="number" id="startWallet"></div>
-                <div><label>Set On Hand</label><input type="number" id="startCash"></div>
-                <div><label>Set Today's Tubo</label><input type="number" id="startDaily"></div>
-                <div><label>Set Month Tubo</label><input type="number" id="startMonthly"></div>
-            </div>
-            <button onclick="saveInventory()" style="background:#6c757d; margin-top:15px;">Update Totals</button>
-            <button onclick="logout()" style="background:#000; font-size:12px; margin-top:30px;">Lock App</button>
+            <button onclick="logout()" style="background:#000; font-size:12px; width: auto; padding: 10px 30px;">Lock App</button>
         </div>
     </div>
 </div>
 
 <script>
-/* SECURITY & THEME */
+let logs = JSON.parse(localStorage.getItem("gcashLogs")) || [];
+let viewDate = new Date(); // Controls which "Page" is being viewed
+
+/* INITIALIZATION */
 function checkAuth() {
     let pin = localStorage.getItem("pin");
     let sessionAuth = sessionStorage.getItem("isLoggedIn");
@@ -130,54 +162,86 @@ function checkAuth() {
         else { alert("Wrong PIN"); window.location.reload(); }
     }
 }
+
 function showApp() { 
     if(localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
     document.getElementById("mainApp").style.display = "block"; 
+    updateDatePicker();
+    loadInitValues();
     render(); 
 }
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+
+/* PAGINATION LOGIC */
+function updateDatePicker() {
+    // Format to YYYY-MM-DD for the input[type=date]
+    const y = viewDate.getFullYear();
+    const m = String(viewDate.getMonth() + 1).padStart(2, '0');
+    const d = String(viewDate.getDate()).padStart(2, '0');
+    document.getElementById("dateJump").value = `${y}-${m}-${d}`;
 }
 
-/* CORE LOGIC */
-let logs = JSON.parse(localStorage.getItem("gcashLogs")) || [];
-let initWallet = Number(localStorage.getItem("initWallet")) || 0;
-let initCash = Number(localStorage.getItem("initCash")) || 0;
-let initDaily = Number(localStorage.getItem("initDaily")) || 0;
-let initMonthly = Number(localStorage.getItem("initMonthly")) || 0;
+function changeDay(offset) {
+    viewDate.setDate(viewDate.getDate() + offset);
+    updateDatePicker();
+    render();
+}
 
-document.getElementById("startWallet").value = initWallet;
-document.getElementById("startCash").value = initCash;
-document.getElementById("startDaily").value = initDaily;
-document.getElementById("startMonthly").value = initMonthly;
+function jumpToDate() {
+    const picked = document.getElementById("dateJump").value;
+    if(picked) {
+        viewDate = new Date(picked);
+        render();
+    }
+}
 
-function setAmount(val) { document.getElementById("amount").value = val; autoCalculateTubo(); }
+/* CORE FUNCTIONS */
+function loadInitValues() {
+    document.getElementById("walletEdit").value = localStorage.getItem("initWallet") || 0;
+    document.getElementById("cashEdit").value = localStorage.getItem("initCash") || 0;
+    document.getElementById("dailyEdit").value = localStorage.getItem("initDaily") || 0;
+    document.getElementById("monthlyEdit").value = localStorage.getItem("initMonthly") || 0;
+}
 
-function autoCalculateTubo() {
-    const amt = Number(document.getElementById("amount").value);
-    const chargeInput = document.getElementById("charge");
-    if (amt >= 2501) chargeInput.value = 35;
-    else if (amt >= 1001) chargeInput.value = 25;
-    else if (amt >= 501) chargeInput.value = 20;
-    else if (amt >= 251) chargeInput.value = 15;
-    else if (amt >= 1) chargeInput.value = 10;
+function manualUpdate(boxName) {
+    const key = "init" + boxName.replace(" ", "");
+    const oldVal = Number(localStorage.getItem(key)) || 0;
+    const inputId = boxName.split(' ')[0].toLowerCase() + "Edit";
+    const newVal = Number(document.getElementById(inputId).value);
+    const diff = newVal - oldVal;
+
+    const reason = prompt("Adjustment Reason?", "Capital Change / Correction");
+    if (reason !== null) {
+        const now = new Date();
+        logs.push({
+            id: Date.now(),
+            fullDate: now.toISOString().split('T')[0], // YYYY-MM-DD
+            time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            monthKey: now.getMonth() + "-" + now.getFullYear(),
+            type: "adj",
+            ref: "SYSTEM",
+            phone: "---",
+            note: `ADJ: ${boxName} (${diff >= 0 ? '+' : ''}${diff})`,
+            amount: Math.abs(diff),
+            charge: 0,
+            comment: reason
+        });
+        localStorage.setItem(key, newVal);
+        save();
+    } else { loadInitValues(); }
 }
 
 function addTransaction() {
     const type = document.getElementById("type").value;
     const amt = Number(document.getElementById("amount").value);
     const charge = Number(document.getElementById("charge").value) || 0;
-    
-    if (!type) return alert("Please select Transaction Type");
-    if (amt <= 0) return alert("Enter amount");
+    if (!type || amt <= 0) return alert("Fill up Type and Amount");
 
     const now = new Date();
     logs.push({
         id: Date.now(),
-        date: now.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }),
-        day: now.toLocaleDateString(),
-        month: now.getMonth() + "-" + now.getFullYear(),
+        fullDate: now.toISOString().split('T')[0],
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        monthKey: now.getMonth() + "-" + now.getFullYear(),
         type: type,
         ref: document.getElementById("refNum").value || "---",
         phone: document.getElementById("phoneNumber").value || "N/A",
@@ -186,13 +250,11 @@ function addTransaction() {
         charge: charge
     });
     
-    // RESET ALL FIELDS TO BLANK
-    document.getElementById("type").selectedIndex = 0;
-    document.getElementById("refNum").value = "";
-    document.getElementById("phoneNumber").value = "";
-    document.getElementById("note").value = "";
-    document.getElementById("amount").value = "";
-    document.getElementById("charge").value = "";
+    // Reset inputs
+    ["type","refNum","phoneNumber","note","amount","charge"].forEach(id => {
+        const el = document.getElementById(id);
+        if(el.tagName === "SELECT") el.selectedIndex = 0; else el.value = "";
+    });
     
     save();
 }
@@ -200,33 +262,36 @@ function addTransaction() {
 function render() {
     const table = document.getElementById("logTable");
     const query = document.getElementById("search").value.toLowerCase();
-    let currentWallet = initWallet;
-    let currentCash = initCash;
-    let dailyTubo = initDaily;
-    let monthlyTubo = initMonthly;
-    
-    const today = new Date().toLocaleDateString();
-    const thisMonth = new Date().getMonth() + "-" + new Date().getFullYear();
+    const activeDayKey = viewDate.toISOString().split('T')[0];
+    const todayKey = new Date().toISOString().split('T')[0];
+    const thisMonthKey = new Date().getMonth() + "-" + new Date().getFullYear();
+
+    let calcWallet = Number(localStorage.getItem("initWallet")) || 0;
+    let calcCash = Number(localStorage.getItem("initCash")) || 0;
+    let dailyTubo = 0;
+    let monthlyTubo = 0;
     
     table.innerHTML = "";
+
     logs.forEach(l => {
-        if (l.type === "cashin" || l.type === "load") {
-            currentWallet -= l.amount;
-            currentCash += (l.amount + l.charge);
-        } else if (l.type === "cashout") {
-            currentWallet += (l.amount + l.charge);
-            currentCash -= l.amount;
-        }
+        // Balances & Tubo (calculated from ALL history)
+        if (l.type === "cashin" || l.type === "load") { calcWallet -= l.amount; calcCash += (l.amount + l.charge); }
+        else if (l.type === "cashout") { calcWallet += (l.amount + l.charge); calcCash -= l.amount; }
         
-        if (l.day === today) dailyTubo += l.charge;
-        if (l.month === thisMonth) monthlyTubo += l.charge;
-        
-        if (l.note.toLowerCase().includes(query) || l.phone.includes(query) || l.ref.toLowerCase().includes(query)) {
+        if (l.fullDate === todayKey) dailyTubo += l.charge;
+        if (l.monthKey === thisMonthKey) monthlyTubo += l.charge;
+
+        // Display Filter: Match current "Page" date OR search query
+        const isSelectedDay = l.fullDate === activeDayKey;
+        const matchesSearch = query && (l.note.toLowerCase().includes(query) || l.phone.includes(query) || l.ref.toLowerCase().includes(query) || l.fullDate.includes(query));
+
+        if (isSelectedDay || matchesSearch) {
+            let typeClass = `type-${l.type}`;
             table.innerHTML = `<tr>
-                <td>${l.date}</td>
-                <td><b>${l.type.toUpperCase()}</b></td>
+                <td>${l.time}<br><small>${l.fullDate}</small></td>
+                <td><span class="badge ${typeClass}">${l.type.toUpperCase()}</span></td>
                 <td>${l.ref}</td>
-                <td>${l.note}</td>
+                <td>${l.note} ${l.comment ? '<br><small>('+l.comment+')</small>' : ''}</td>
                 <td>${l.phone}</td>
                 <td>₱${l.amount.toLocaleString()}</td>
                 <td>₱${l.charge}</td>
@@ -235,33 +300,28 @@ function render() {
         }
     });
 
-    document.getElementById("walletDisp").textContent = currentWallet.toLocaleString();
-    document.getElementById("cashDisp").textContent = currentCash.toLocaleString();
-    document.getElementById("dailyDisp").textContent = dailyTubo.toLocaleString();
-    document.getElementById("monthlyDisp").textContent = monthlyTubo.toLocaleString();
+    document.getElementById("walletEdit").value = calcWallet;
+    document.getElementById("cashEdit").value = calcCash;
+    document.getElementById("dailyEdit").value = dailyTubo;
+    document.getElementById("monthlyEdit").value = monthlyTubo;
 }
 
+function save() { localStorage.setItem("gcashLogs", JSON.stringify(logs)); render(); }
+function deleteRow(id) { if(confirm("Delete record?")) { logs = logs.filter(l => l.id !== id); save(); } }
+function setAmount(v) { document.getElementById("amount").value = v; autoCalculateTubo(); }
+function autoCalculateTubo() {
+    const a = Number(document.getElementById("amount").value);
+    const c = document.getElementById("charge");
+    c.value = a>=2501?35 : a>=1001?25 : a>=501?20 : a>=251?15 : a>=1?10 : 0;
+}
+function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("theme", document.body.classList.contains("dark")?"dark":"light"); }
 function downloadCSV() {
-    if (logs.length === 0) return alert("No logs to download");
-    let csv = "Date,Type,Ref,Name,Number,Amount,Fee\n";
-    logs.forEach(l => { csv += `${l.date},${l.type},${l.ref},${l.note},${l.phone},${l.amount},${l.charge}\n`; });
+    let csv = "Date,Time,Type,Ref,Name,Number,Amount,Fee\n";
+    logs.forEach(l => { csv += `${l.fullDate},${l.time},${l.type},${l.ref},${l.note},${l.phone},${l.amount},${l.charge}\n`; });
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'GCash_Logbook.csv'; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = 'GCash_Full_History.csv'; a.click();
 }
-
-function deleteRow(id) { if(confirm("Delete this record?")) { logs = logs.filter(l => l.id !== id); save(); } }
-
-function saveInventory() {
-    localStorage.setItem("initWallet", document.getElementById("startWallet").value);
-    localStorage.setItem("initCash", document.getElementById("startCash").value);
-    localStorage.setItem("initDaily", document.getElementById("startDaily").value);
-    localStorage.setItem("initMonthly", document.getElementById("startMonthly").value);
-    render();
-    alert("Balances updated!");
-}
-function save() { localStorage.setItem("gcashLogs", JSON.stringify(logs)); render(); }
 function logout() { sessionStorage.removeItem("isLoggedIn"); window.location.reload(); }
 
 checkAuth();
