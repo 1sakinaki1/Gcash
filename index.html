@@ -18,7 +18,6 @@ body { font-family: -apple-system, Arial, sans-serif; background: var(--bg); col
 h1 { text-align: center; color: var(--primary); margin-bottom: 20px; font-size: 22px; }
 .theme-toggle { background: none; color: var(--primary); border: 1px solid var(--primary); width: auto; padding: 8px 15px; font-size: 11px; border-radius: 20px; cursor: pointer; display: block; margin: 0 auto 15px auto; }
 
-/* Dashboard Editable Boxes */
 .dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
 .stat-box { background: var(--bg); padding: 10px 5px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
 .stat-label { font-size: 9px; opacity: 0.7; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
@@ -32,17 +31,11 @@ label { font-weight: 600; margin-top: 15px; display: block; font-size: 13px; }
 input, select, button { width: 100%; padding: 12px; margin-top: 6px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; box-sizing: border-box; background: var(--input-bg); color: var(--text); }
 button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
 
-/* Navigation Styling */
-.page-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; gap: 10px; }
-.nav-btn { background: var(--bg); color: var(--primary); border: 1px solid var(--primary); padding: 8px; font-size: 11px; width: auto; flex: 1; }
-.current-date-display { font-weight: bold; font-size: 14px; text-align: center; flex: 2; color: var(--primary); }
-.date-picker-input { padding: 5px; font-size: 12px; border-radius: 5px; border: 1px solid var(--border); }
-
-.quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
-.quick-btns button { background: var(--border); color: var(--text); font-size: 12px; padding: 10px; }
-
-.table-header-tools { margin-top: 20px; }
-.search-input { border: 2px solid var(--primary); margin-bottom: 10px; }
+.page-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; gap: 5px; }
+.nav-btn { background: var(--bg); color: var(--primary); border: 1px solid var(--primary); padding: 8px; font-size: 10px; width: auto; flex: 1; }
+.today-btn { background: var(--primary); color: white; border: none; padding: 8px; font-size: 10px; width: auto; flex: 1; }
+.current-date-display { font-weight: bold; font-size: 12px; text-align: center; flex: 1.5; color: var(--primary); }
+.date-picker-input { padding: 4px; font-size: 11px; border-radius: 5px; border: 1px solid var(--border); width: 100%; }
 
 .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border-radius: 10px; border: 1px solid var(--border); }
 table { width: 100%; border-collapse: collapse; min-width: 750px; }
@@ -53,12 +46,9 @@ th { background: var(--bg); color: var(--primary); }
 .type-cashin { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
 .type-cashout { background: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
 .type-load { background: rgba(0, 196, 255, 0.2); color: #0096cc; border: 1px solid #00c4ff; }
-.type-adj { background: #6c757d; color: white; border: 1px solid #333; }
+.type-system { background: #6c757d; color: white; border: 1px solid #333; }
 
 .del-btn { background: var(--danger); width: auto; padding: 6px 10px; font-size: 10px; }
-.csv-btn { background: #6c757d; margin-bottom: 15px; }
-
-.setup-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed var(--border); text-align: center; }
 </style>
 </head>
 <body>
@@ -71,19 +61,19 @@ th { background: var(--bg); color: var(--primary); }
         <div class="dashboard">
             <div class="stat-box">
                 <span class="stat-label">GCash</span>
-                <span style="color:var(--primary)">₱<input type="number" id="walletEdit" class="stat-edit" onchange="manualUpdate('GCash')"></span>
+                <span style="color:var(--primary)">₱<input type="number" id="walletEdit" class="stat-edit" onchange="manualUpdate('Wallet', this.value)"></span>
             </div>
             <div class="stat-box">
                 <span class="stat-label">On Hand</span>
-                <span style="color:var(--success)">₱<input type="number" id="cashEdit" class="stat-edit" onchange="manualUpdate('On Hand')"></span>
+                <span style="color:var(--success)">₱<input type="number" id="cashEdit" class="stat-edit" onchange="manualUpdate('Cash', this.value)"></span>
             </div>
             <div class="stat-box">
                 <span class="stat-label">Today</span>
-                <span style="color:#6f42c1">₱<input type="number" id="dailyEdit" class="stat-edit" onchange="manualUpdate('Today Tubo')"></span>
+                <span style="color:#6f42c1">₱<input type="number" id="dailyEdit" class="stat-edit" onchange="manualUpdate('Daily', this.value)"></span>
             </div>
             <div class="stat-box">
                 <span class="stat-label">Month</span>
-                <span style="color:#fd7e14">₱<input type="number" id="monthlyEdit" class="stat-edit" onchange="manualUpdate('Monthly Tubo')"></span>
+                <span style="color:#fd7e14">₱<input type="number" id="monthlyEdit" class="stat-edit" onchange="manualUpdate('Monthly', this.value)"></span>
             </div>
         </div>
 
@@ -101,16 +91,11 @@ th { background: var(--bg); color: var(--primary); }
         <label>GCash Number</label>
         <input type="text" id="phoneNumber" placeholder="09xxxxxxxxx">
 
+        <label>Amount (₱)</label>
+        <input type="number" id="amount" placeholder="0.00" oninput="autoCalculateTubo()">
+
         <label>Reference Number</label>
         <input type="text" id="refNum" placeholder="Enter Ref #">
-
-        <label>Amount (₱)</label>
-        <div class="quick-btns">
-            <button type="button" onclick="setAmount(100)">+100</button>
-            <button type="button" onclick="setAmount(500)">+500</button>
-            <button type="button" onclick="setAmount(1000)">+1k</button>
-        </div>
-        <input type="number" id="amount" placeholder="0.00" oninput="autoCalculateTubo()">
 
         <label>Fee / Tubo (₱)</label>
         <input type="number" id="charge" placeholder="0.00">
@@ -118,37 +103,30 @@ th { background: var(--bg); color: var(--primary); }
         <button onclick="addTransaction()" style="margin-top: 20px; background: var(--primary); height: 50px;">Save Transaction</button>
         
         <div class="table-header-tools">
-            <button onclick="downloadCSV()" class="csv-btn">📥 Download Spreadsheet</button>
-            
             <div class="page-nav">
-                <button class="nav-btn" onclick="changeDay(-1)">← Older Day</button>
+                <button class="nav-btn" onclick="changeDay(-1)">← Older</button>
+                <button class="today-btn" onclick="goToday()">Today</button>
                 <div class="current-date-display">
                     <input type="date" id="dateJump" class="date-picker-input" onchange="jumpToDate()">
                 </div>
-                <button class="nav-btn" onclick="changeDay(1)">Newer Day →</button>
+                <button class="nav-btn" onclick="changeDay(1)">Newer →</button>
             </div>
-
-            <input type="text" id="search" class="search-input" placeholder="🔍 Search any date, name, or number..." oninput="render()" style="margin-top: 15px;">
+            <input type="text" id="search" placeholder="🔍 Search name, number, or ref#..." oninput="render()" style="margin-top: 15px; width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--input-bg); color:var(--text);">
         </div>
 
         <div class="table-container">
             <table>
-                <thead><tr><th>Time</th><th>Type</th><th>Ref #</th><th>Name/Adj</th><th>Number</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
+                <thead><tr><th>Time/Date</th><th>Type</th><th>Ref #</th><th>Name / Adjustment</th><th>Number</th><th>Amt</th><th>Fee</th><th>Action</th></tr></thead>
                 <tbody id="logTable"></tbody>
             </table>
-        </div>
-
-        <div class="setup-section">
-            <button onclick="logout()" style="background:#000; font-size:12px; width: auto; padding: 10px 30px;">Lock App</button>
         </div>
     </div>
 </div>
 
 <script>
 let logs = JSON.parse(localStorage.getItem("gcashLogs")) || [];
-let viewDate = new Date(); // Controls which "Page" is being viewed
+let viewDate = new Date();
 
-/* INITIALIZATION */
 function checkAuth() {
     let pin = localStorage.getItem("pin");
     let sessionAuth = sessionStorage.getItem("isLoggedIn");
@@ -167,67 +145,31 @@ function showApp() {
     if(localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
     document.getElementById("mainApp").style.display = "block"; 
     updateDatePicker();
-    loadInitValues();
     render(); 
 }
 
-/* PAGINATION LOGIC */
-function updateDatePicker() {
-    // Format to YYYY-MM-DD for the input[type=date]
-    const y = viewDate.getFullYear();
-    const m = String(viewDate.getMonth() + 1).padStart(2, '0');
-    const d = String(viewDate.getDate()).padStart(2, '0');
-    document.getElementById("dateJump").value = `${y}-${m}-${d}`;
-}
-
-function changeDay(offset) {
-    viewDate.setDate(viewDate.getDate() + offset);
-    updateDatePicker();
-    render();
-}
-
-function jumpToDate() {
-    const picked = document.getElementById("dateJump").value;
-    if(picked) {
-        viewDate = new Date(picked);
-        render();
-    }
-}
-
-/* CORE FUNCTIONS */
-function loadInitValues() {
-    document.getElementById("walletEdit").value = localStorage.getItem("initWallet") || 0;
-    document.getElementById("cashEdit").value = localStorage.getItem("initCash") || 0;
-    document.getElementById("dailyEdit").value = localStorage.getItem("initDaily") || 0;
-    document.getElementById("monthlyEdit").value = localStorage.getItem("initMonthly") || 0;
-}
-
-function manualUpdate(boxName) {
-    const key = "init" + boxName.replace(" ", "");
-    const oldVal = Number(localStorage.getItem(key)) || 0;
-    const inputId = boxName.split(' ')[0].toLowerCase() + "Edit";
-    const newVal = Number(document.getElementById(inputId).value);
-    const diff = newVal - oldVal;
-
-    const reason = prompt("Adjustment Reason?", "Capital Change / Correction");
+function manualUpdate(target, newVal) {
+    const oldVal = Number(document.getElementById(target.toLowerCase() + "Edit").dataset.current || 0);
+    const reason = prompt(`Adjusting ${target}. Reason?`, "Manual Correction");
     if (reason !== null) {
         const now = new Date();
         logs.push({
             id: Date.now(),
-            fullDate: now.toISOString().split('T')[0], // YYYY-MM-DD
+            fullDate: now.toISOString().split('T')[0],
             time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             monthKey: now.getMonth() + "-" + now.getFullYear(),
-            type: "adj",
-            ref: "SYSTEM",
+            type: "system",
+            ref: "ADJUST",
             phone: "---",
-            note: `ADJ: ${boxName} (${diff >= 0 ? '+' : ''}${diff})`,
-            amount: Math.abs(diff),
+            note: `MODIFIED ${target.toUpperCase()}: (₱${oldVal} → ₱${newVal})`,
+            comment: reason,
+            amount: 0,
             charge: 0,
-            comment: reason
+            targetBox: target,
+            newVal: Number(newVal)
         });
-        localStorage.setItem(key, newVal);
         save();
-    } else { loadInitValues(); }
+    } else { render(); }
 }
 
 function addTransaction() {
@@ -249,13 +191,10 @@ function addTransaction() {
         amount: amt,
         charge: charge
     });
-    
-    // Reset inputs
     ["type","refNum","phoneNumber","note","amount","charge"].forEach(id => {
         const el = document.getElementById(id);
         if(el.tagName === "SELECT") el.selectedIndex = 0; else el.value = "";
     });
-    
     save();
 }
 
@@ -266,32 +205,29 @@ function render() {
     const todayKey = new Date().toISOString().split('T')[0];
     const thisMonthKey = new Date().getMonth() + "-" + new Date().getFullYear();
 
-    let calcWallet = Number(localStorage.getItem("initWallet")) || 0;
-    let calcCash = Number(localStorage.getItem("initCash")) || 0;
-    let dailyTubo = 0;
-    let monthlyTubo = 0;
-    
+    let wallet = 0, cash = 0, dailyTubo = 0, monthlyTubo = 0;
     table.innerHTML = "";
 
     logs.forEach(l => {
-        // Balances & Tubo (calculated from ALL history)
-        if (l.type === "cashin" || l.type === "load") { calcWallet -= l.amount; calcCash += (l.amount + l.charge); }
-        else if (l.type === "cashout") { calcWallet += (l.amount + l.charge); calcCash -= l.amount; }
-        
-        if (l.fullDate === todayKey) dailyTubo += l.charge;
-        if (l.monthKey === thisMonthKey) monthlyTubo += l.charge;
+        if (l.type === "system") {
+            if (l.targetBox === "Wallet") wallet = l.newVal;
+            if (l.targetBox === "Cash") cash = l.newVal;
+            if (l.targetBox === "Daily" && l.fullDate === todayKey) dailyTubo = l.newVal;
+            if (l.targetBox === "Monthly" && l.monthKey === thisMonthKey) monthlyTubo = l.newVal;
+        } else {
+            if (l.type === "cashin" || l.type === "load") { wallet -= l.amount; cash += (l.amount + l.charge); }
+            else if (l.type === "cashout") { wallet += (l.amount + l.charge); cash -= l.amount; }
+            if (l.fullDate === todayKey) dailyTubo += l.charge;
+            if (l.monthKey === thisMonthKey) monthlyTubo += l.charge;
+        }
 
-        // Display Filter: Match current "Page" date OR search query
-        const isSelectedDay = l.fullDate === activeDayKey;
-        const matchesSearch = query && (l.note.toLowerCase().includes(query) || l.phone.includes(query) || l.ref.toLowerCase().includes(query) || l.fullDate.includes(query));
-
-        if (isSelectedDay || matchesSearch) {
+        if (l.fullDate === activeDayKey || (query && (l.note.toLowerCase().includes(query) || l.phone.includes(query) || l.ref.toLowerCase().includes(query)))) {
             let typeClass = `type-${l.type}`;
             table.innerHTML = `<tr>
                 <td>${l.time}<br><small>${l.fullDate}</small></td>
                 <td><span class="badge ${typeClass}">${l.type.toUpperCase()}</span></td>
                 <td>${l.ref}</td>
-                <td>${l.note} ${l.comment ? '<br><small>('+l.comment+')</small>' : ''}</td>
+                <td><b>${l.note}</b>${l.comment ? '<br><small>('+l.comment+')</small>' : ''}</td>
                 <td>${l.phone}</td>
                 <td>₱${l.amount.toLocaleString()}</td>
                 <td>₱${l.charge}</td>
@@ -300,30 +236,18 @@ function render() {
         }
     });
 
-    document.getElementById("walletEdit").value = calcWallet;
-    document.getElementById("cashEdit").value = calcCash;
-    document.getElementById("dailyEdit").value = dailyTubo;
-    document.getElementById("monthlyEdit").value = monthlyTubo;
+    const setVal = (id, val) => { const el = document.getElementById(id); if(el) { el.value = val; el.dataset.current = val; } };
+    setVal("walletEdit", wallet); setVal("cashEdit", cash); setVal("dailyEdit", dailyTubo); setVal("monthlyEdit", monthlyTubo);
 }
 
 function save() { localStorage.setItem("gcashLogs", JSON.stringify(logs)); render(); }
 function deleteRow(id) { if(confirm("Delete record?")) { logs = logs.filter(l => l.id !== id); save(); } }
-function setAmount(v) { document.getElementById("amount").value = v; autoCalculateTubo(); }
-function autoCalculateTubo() {
-    const a = Number(document.getElementById("amount").value);
-    const c = document.getElementById("charge");
-    c.value = a>=2501?35 : a>=1001?25 : a>=501?20 : a>=251?15 : a>=1?10 : 0;
-}
+function goToday() { viewDate = new Date(); updateDatePicker(); render(); }
+function updateDatePicker() { const y = viewDate.getFullYear(), m = String(viewDate.getMonth() + 1).padStart(2, '0'), d = String(viewDate.getDate()).padStart(2, '0'); document.getElementById("dateJump").value = `${y}-${m}-${d}`; }
+function changeDay(o) { viewDate.setDate(viewDate.getDate() + o); updateDatePicker(); render(); }
+function jumpToDate() { viewDate = new Date(document.getElementById("dateJump").value); render(); }
+function autoCalculateTubo() { const a = Number(document.getElementById("amount").value), c = document.getElementById("charge"); c.value = a>=2501?35 : a>=1001?25 : a>=501?20 : a>=251?15 : a>=1?10 : 0; }
 function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("theme", document.body.classList.contains("dark")?"dark":"light"); }
-function downloadCSV() {
-    let csv = "Date,Time,Type,Ref,Name,Number,Amount,Fee\n";
-    logs.forEach(l => { csv += `${l.fullDate},${l.time},${l.type},${l.ref},${l.note},${l.phone},${l.amount},${l.charge}\n`; });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'GCash_Full_History.csv'; a.click();
-}
-function logout() { sessionStorage.removeItem("isLoggedIn"); window.location.reload(); }
-
 checkAuth();
 </script>
 </body>
